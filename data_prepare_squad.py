@@ -6,9 +6,12 @@ import random
 
 data_dir = 'data\\ccks 4_2 Data'
 input_file = 'event_element_train_data_label.txt'
+pred_file = 'event_element_dev_data.txt'
+cl_pred_result_file = 'data\\output\\electra_models_electra_small_results_ccks42ec_cl_ccks42ec_eval_preds.json'
 output_dir = 'D:\\项目\\11 CCKS\\electra\\models\\ccks42ee'
 train_file = 'train.json'
 dev_file = 'dev.json'
+test_file = 'eval.json'
 dev_ratio = 1 / 11
 random.seed(42)
 role_event_type_dict = {
@@ -97,3 +100,52 @@ with open(os.path.join(data_dir, input_file), 'r', encoding='utf8') as input_fh,
 
   json.dump(train_json, train_fh, ensure_ascii=False)
   json.dump(dev_json, dev_fh, ensure_ascii=False)
+
+
+test_json = {
+  'version': 'v2.0',
+  'data': []
+}
+task = 'eval'
+text_label_dict = {}
+with open(cl_pred_result_file, 'r', encoding='utf8') as cl_pred_fh:
+  for text, label in json.load(cl_pred_fh).items():
+    text_label_dict[text]=label
+
+with open(os.path.join(data_dir, pred_file), 'r', encoding='utf8') as input_fh, open(
+    os.path.join(output_dir, test_file), 'w', encoding='utf8') as test_fh:
+  for org_line in input_fh:
+    org_json = json.loads(org_line)
+    org_text = org_json['content']
+    text = re.sub(r'\s', ' ', org_text)
+
+    data = {
+      'paragraphs': [
+        {
+          'id': '{}_{}'.format(task.upper(), i),
+          'context': text,
+          'qas': [],
+        }
+      ],
+      'id': '{}_{}'.format(task.upper(), i),
+      'title': org_json['doc_id'],
+    }
+
+    if text in text_label_dict.keys():
+      label = text_label_dict[text]
+    else:
+      print(text)
+    event_type, r = label.split('_')
+    for question_main_idx in range(1, int(r) + 1):
+      role_list = role_event_type_dict[event_type]
+      for question_minor_idx, role in enumerate(role_list):
+        question = '第{}_{}个问题：{}是什么？'.format(question_main_idx, question_minor_idx, role)
+        qas = {
+          'question': question,
+          'id': '{}_{}_QUERY_{}_{}'.format(task.upper(), i, question_main_idx, question_minor_idx),
+        }
+        data['paragraphs'][0]['qas'].append(qas)
+
+    test_json['data'].append(data)
+  json.dump(test_json, test_fh, ensure_ascii=False)
+
