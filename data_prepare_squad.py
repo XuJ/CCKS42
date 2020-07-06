@@ -114,7 +114,7 @@ with open(cl_pred_result_file, 'r', encoding='utf8') as cl_pred_fh:
 
 with open(os.path.join(data_dir, pred_file), 'r', encoding='utf8') as input_fh, open(
     os.path.join(output_dir, test_file), 'w', encoding='utf8') as test_fh:
-  for org_line in input_fh:
+  for i, org_line in enumerate(input_fh):
     org_json = json.loads(org_line)
     org_text = org_json['content']
     text = re.sub(r'\s', ' ', org_text)
