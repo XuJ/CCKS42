@@ -2,10 +2,11 @@ import os
 import json
 import re
 
-ec_pred_file = 'D:\\Temp\\electra_models_electra_small_results_ccks42ec_cl_ccks42ec_eval_preds.json'
-ee_pred_file = 'D:\\Temp\\electra_models_electra_small_results_ccks42ee_qa_ccks42ee_eval_1_preds.json'
-ee_input_file = 'D:\\Temp\\ccks42ee\\eval.json'
-output_file = 'D:\\Temp\\result.txt'
+model_name = 'electra_small'
+ec_pred_file = 'data\\output\\{}\\ccks42ec_eval_preds.json'.format(model_name)
+ee_pred_file = 'data\\output\\{}\\ccks42ee_eval_1_preds.json'.format(model_name)
+ee_input_file = 'data\\ccks42ee\\eval.json'
+output_file = 'data\\output\\{}\\result.txt'.format(model_name)
 
 with open(ec_pred_file, 'r', encoding='utf8') as ec_pred_fh:
   text_event_type_dict = json.load(ec_pred_fh)
@@ -37,7 +38,6 @@ with open(ee_input_file, 'r', encoding='utf8') as ee_input_fh, open(output_file,
       question = j['question']
       event_element = question.split('是什么')[0].split('：')[-1]
       answer = question_id_answer_dict[question_id]
-      qas_dict[event_index].append((event_element, answer))
     events = []
     for n in range(1, event_num+1):
       event = {

@@ -4,11 +4,12 @@ import json
 import re
 import random
 
+model_name = 'electra_small'
 data_dir = 'data\\ccks 4_2 Data'
 input_file = 'event_element_train_data_label.txt'
 pred_file = 'event_element_dev_data.txt'
-cl_pred_result_file = 'data\\output\\electra_models_electra_small_results_ccks42ec_cl_ccks42ec_eval_preds.json'
-output_dir = 'D:\\项目\\11 CCKS\\electra\\models\\ccks42ee'
+cl_pred_result_file = 'data\\output\\{}\\ccks42ec_eval_preds.json'.format(model_name)
+output_dir = 'data\\ccks42ee'
 train_file = 'train.json'
 dev_file = 'dev.json'
 test_file = 'eval.json'

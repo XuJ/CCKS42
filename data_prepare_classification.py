@@ -7,7 +7,7 @@ import random
 data_dir = 'data\\ccks 4_2 Data'
 input_file = 'event_element_train_data_label.txt'
 pred_file = 'event_element_dev_data.txt'
-output_dir = 'D:\\项目\\11 CCKS\\electra\\models\\ccks42ec'
+output_dir = 'data\\ccks42ec'
 train_file = 'train.tsv'
 dev_file = 'dev.tsv'
 test_file = 'eval.tsv'
