@@ -77,7 +77,8 @@ def argument_analysis():
         argument_list = argument_event_type_dict[event_type]
         for argument in argument_list:
           if argument in event.keys():
-            argument_num_dict[event_type][argument] += 1
+            if len(event[argument].strip()) > 0:
+              argument_num_dict[event_type][argument] += 1
       if event_num > 1:
         event_set = set()
         for event in data['events']:
@@ -110,7 +111,8 @@ def min_partition_analysis():
       arguments_dict = {}
       for event in data['events']:
         event_type = event['event_type']
-        arguments_dict[event_type] = []
+        if event_type not in arguments_dict.keys():
+          arguments_dict[event_type] = []
         argument_list = argument_event_type_dict[event_type]
         for role in argument_list:
           if role in event.keys():
@@ -131,9 +133,11 @@ def min_partition_analysis():
             break
         if has_event:
           if has_all_events:
-            print(sentence, event_type)
+            pass
+            # print(sentence, event_type)
           else:
-            print(sentence, event_type)
+            pass
+            # print(sentence, event_type)
 
 
 if __name__ == '__main__':

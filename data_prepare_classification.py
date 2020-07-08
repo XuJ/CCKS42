@@ -40,12 +40,17 @@ for event_type in event_types_orig:
 print(event_types)
 
 for file in [train_file, dev_file]:
-  with open(os.path.join(output_dir, dev_file), 'r', encoding='utf8') as train_fh:
+  event_type_count_dict = {}
+  with open(os.path.join(output_dir, file), 'r', encoding='utf8') as train_fh:
     for org_line in train_fh:
       if len(org_line.split('\t')) != 2:
         print(len(org_line.split('\t')), org_line)
       if org_line.split('\t')[-1].strip() not in event_types:
         print(org_line.split('\t')[-1].strip(), org_line)
+      else:
+        event_type = org_line.split('\t')[-1].strip()
+        event_type_count_dict[event_type] = event_type_count_dict.get(event_type, 0)+1
+  print(file, event_type_count_dict)
 
 
 with open(os.path.join(data_dir, pred_file), 'r', encoding='utf8') as input_fh, open(
