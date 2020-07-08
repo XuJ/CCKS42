@@ -20,7 +20,8 @@ with open(os.path.join(data_dir, input_file), 'r', encoding='utf8') as input_fh,
   for org_line in input_fh:
     data = json.loads(org_line)
     org_text = data['content']
-    text = re.sub(re.compile('\s'), ' ', org_text)
+    text = re.sub(r'\s', ' ', org_text)
+    text = re.sub(r'<br>', '', text)
     event_type_orig = data['events'][0]['event_type']
     event_num = len(data['events'])
     event_type = '{}_{}'.format(event_type_orig, event_num)
@@ -32,11 +33,14 @@ with open(os.path.join(data_dir, input_file), 'r', encoding='utf8') as input_fh,
       train_fh.write(output_line)
       train_fh.write('\n')
 
-event_types_orig = ['重大资产损失', '股东减持', '股权质押', '高层死亡', '股权冻结', '股东增持', '重大对外赔付', '重大安全事故', '破产清算']
+single_event_types_orig = ['重大资产损失', '高层死亡', '重大对外赔付', '重大安全事故', '破产清算']
+multi_event_types_orig = ['股东减持', '股权质押', '股权冻结', '股东增持']
 event_types = []
-for event_type in event_types_orig:
+for event_type in multi_event_types_orig:
   for i in [1, 2, 3, 4, 5]:
     event_types.append('{}_{}'.format(event_type, i))
+for event_type in single_event_types_orig:
+  event_types.append('{}_1'.format(event_type))
 print(event_types)
 
 for file in [train_file, dev_file]:
@@ -49,17 +53,16 @@ for file in [train_file, dev_file]:
         print(org_line.split('\t')[-1].strip(), org_line)
       else:
         event_type = org_line.split('\t')[-1].strip()
-        event_type_count_dict[event_type] = event_type_count_dict.get(event_type, 0)+1
+        event_type_count_dict[event_type] = event_type_count_dict.get(event_type, 0) + 1
   print(file, event_type_count_dict)
-
 
 with open(os.path.join(data_dir, pred_file), 'r', encoding='utf8') as input_fh, open(
     os.path.join(output_dir, test_file), 'w', encoding='utf8') as test_fh:
   for org_line in input_fh:
     data = json.loads(org_line)
     org_text = data['content']
-    text = re.sub(re.compile('\s'), ' ', org_text)
+    text = re.sub(r'\s', ' ', org_text)
+    text = re.sub(r'<br>', '', text)
     output_line = '\t'.join([text, '没有标签自己预测'])
     test_fh.write(output_line)
     test_fh.write('\n')
-

@@ -1,0 +1,6 @@
+.idea/
+data/
+paper
+*.doc
+*.xls
+__pycache__/
