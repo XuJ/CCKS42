@@ -109,13 +109,15 @@ with open(os.path.join(data_dir, input_file), 'r', encoding='utf8') as input_fh,
               arguments.append(argument)
               roles.append(role)
 
+      if len(roles) == 0:
+        continue
       argument_locs = re_annotate.generate_locs(arguments)
       argument_loc_dict = {}
       for l, a in zip(argument_locs, arguments):
         argument_loc_dict[a] = l
 
       for question_minor_idx, role in enumerate(role_list):
-        question = '{}|{}：{}'.format(event_type, role_entity_type_dict[role], role)
+        question = '{}|{}|{}：{}'.format(question_main_idx, event_type, role_entity_type_dict[role], role)
         if role in roles:
           argument = event[role].strip()
           argument_start = argument_loc_dict[argument]
@@ -185,7 +187,7 @@ with open(os.path.join(data_dir, pred_file), 'r', encoding='utf8') as input_fh, 
     for question_main_idx in range(1, int(r) + 1):
       role_list = role_event_type_dict[event_type]
       for question_minor_idx, role in enumerate(role_list):
-        question = '{}|{}：{}'.format(event_type, role_entity_type_dict[role], role)
+        question = '{}|{}|{}：{}'.format(question_main_idx, event_type, role_entity_type_dict[role], role)
         qas = {
           'question': question,
           'id': '{}_{}_QUERY_{}_{}'.format(task.upper(), i, question_main_idx, question_minor_idx),

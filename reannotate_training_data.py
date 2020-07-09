@@ -4,9 +4,14 @@ import itertools
 class ReAnnotate(object):
   def __init__(self, text):
     self.text = text
+    self.sentences = self.text.split('。|！|？')
 
   def get_locs(self, argument):
     res = [i for i in range(len(self.text)) if self.text.startswith(argument, i)]
+    return res
+
+  def get_sentence(self, argument):
+    res = [i for i in range(len(self.sentences)) if self.sentences[i].find(argument) != -1]
     return res
 
   def get_distance(self, locs):
