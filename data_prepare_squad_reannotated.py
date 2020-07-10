@@ -5,7 +5,7 @@ import re
 import random
 from reannotate_training_data import ReAnnotate
 
-model_name = 'electra_small'
+model_name = 'electra_base'
 data_dir = 'data\\ccks 4_2 Data'
 input_file = 'event_element_train_data_label.txt'
 pred_file = 'event_element_dev_data.txt'
