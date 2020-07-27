@@ -1,11 +1,13 @@
 gcloud config set project spherical-treat-280701
 gcloud config set compute/zone europe-west4-a
+
 gcloud compute instances create jxvm \
-       --machine-type=n1-standard-2 \
+       --machine-type=n1-highmem-4 \
        --image-project=ubuntu-os-cloud \
        --image-family=ubuntu-1804-lts  \
        --boot-disk-size=250g \
-       --scopes=cloud-platform
+       --scopes=cloud-platform \
+	   --preemptible
 ctpu up --tpu-size=v3-8 --zone=europe-west4-a --tf-version=1.15 --name jxtpu --tpu-only
 ctpu up --tpu-size=v3-8 --zone=europe-west4-a --tf-version=1.15 --name jxtpu2 --tpu-only
 ctpu rm --zone=europe-west4-a --name jxtpu3 --tpu-only
@@ -21,36 +23,47 @@ gcloud compute ssh --zone europe-west4-a jxvm
 
 ########################################################################################
 
-git clone https://github.com/XuJ/Chinese-ELECTRA.git
+sudo apt-get update
+sudo apt-get install python3-pip
+python3 -m pip install --upgrade pip
+pip3 install stanza scipy sklearn tensorflow==1.15.2
+pip3 install --upgrade google-api-python-client oauth2client
 
-gsutil ls -r gs://ccks2020/electra/
-gsutil ls -r gs://ccks2020/electra/finetuning_data/
+git clone https://github.com/XuJ/Chinese-ELECTRA.git -b dev
+
+gsutil ls -r gs://ccks/electra/
+gsutil ls -r gs://ccks/electra/finetuning_data/
 python3 run_finetuning.py \
-    --data-dir  gs://ccks2020/electra/ \
+    --data-dir  gs://ccks/electra/ \
     --model-name electra_large \
-    --hparams '{"model_size": "large", "task_names": ["ccks42ec"], "use_tpu": true, "num_tpu_cores": 8, "vocab_size": 21128, "tpu_name": "jxtpu", "do_eval": true, "do_test": false, "write_test_outputs": false, "use_tfrecords_if_existing": false, "do_train": true}'
-
-python3 run_finetuning.py \
-    --data-dir  gs://ccks2020/electra/ \
-    --model-name electra_base \
-    --hparams '{"model_size": "base", "task_names": ["ccks42ec"], "use_tpu": true, "num_tpu_cores": 8, "vocab_size": 21128, "tpu_name": "jxtpu", "do_eval": false, "do_test": true, "write_test_outputs": true, "use_tfrecords_if_existing": false, "do_train": false, "max_seq_length": 512}'
-
-python3 run_finetuning.py \
-    --data-dir  gs://ccks2020/electra/ \
+    --hparams '{"model_size": "large", "task_names": ["ner"], "use_tpu": true, "num_tpu_cores": 8, "vocab_size": 21128, "tpu_name": "jxtpu", "do_eval": true, "do_test": false, "write_test_outputs": false, "use_tfrecords_if_existing": false, "do_train": true, "max_seq_length": 512, "max_answer_length": 64}' && python3 run_finetuning.py \
+    --data-dir  gs://ccks/electra/ \
     --model-name electra_large \
-    --hparams '{"model_size": "large", "task_names": ["ccks42ee"], "use_tpu": true, "num_tpu_cores": 8, "vocab_size": 21128, "tpu_name": "jxtpu4", "do_eval": true, "do_test": false, "write_test_outputs": false, "use_tfrecords_if_existing": false, "do_train": true}'
+    --hparams '{"model_size": "large", "task_names": ["ner"], "use_tpu": true, "num_tpu_cores": 8, "vocab_size": 21128, "tpu_name": "jxtpu", "do_eval": false, "do_test": true, "write_test_outputs": true, "use_tfrecords_if_existing": false, "do_train": false, "max_seq_length": 512, "max_answer_length": 64}'
 
 python3 run_finetuning.py \
-    --data-dir  gs://ccks2020/electra/ \
-    --model-name electra_base \
-    --hparams '{"model_size": "base", "task_names": ["ccks42ee"], "use_tpu": true, "num_tpu_cores": 8, "vocab_size": 21128, "tpu_name": "jxtpu2", "do_eval": false, "do_test": true, "write_test_outputs": true, "use_tfrecords_if_existing": true, "do_train": false, "qa_na_threshold": -3.54}'
+    --data-dir  gs://ccks/electra/ \
+    --model-name electra_large \
+    --hparams '{"model_size": "large", "task_names": ["ccks42ec", "ccks42num"], "use_tpu": true, "num_tpu_cores": 8, "vocab_size": 21128, "tpu_name": "jxtpu2", "do_eval": true, "do_test": false, "write_test_outputs": false, "use_tfrecords_if_existing": false, "do_train": true, "max_seq_length": 512}' && python3 run_finetuning.py \
+    --data-dir  gs://ccks/electra/ \
+    --model-name electra_large \
+    --hparams '{"model_size": "large", "task_names": ["ccks42ec", "ccks42num"], "use_tpu": true, "num_tpu_cores": 8, "vocab_size": 21128, "tpu_name": "jxtpu2", "do_eval": false, "do_test": true, "write_test_outputs": true, "use_tfrecords_if_existing": false, "do_train": false, "max_seq_length": 512}'
+
+python3 run_finetuning.py \
+    --data-dir  gs://ccks/electra/ \
+    --model-name electra_large \
+    --hparams '{"model_size": "large", "task_names": ["ccks42ee"], "use_tpu": true, "num_tpu_cores": 8, "vocab_size": 21128, "tpu_name": "jxtpu2", "do_eval": true, "do_test": false, "write_test_outputs": false, "use_tfrecords_if_existing": false, "do_train": true, "max_seq_length": 512, "max_answer_length": 64}' && python3 run_finetuning.py \
+    --data-dir  gs://ccks/electra/ \
+    --model-name electra_large \
+    --hparams '{"model_size": "large", "task_names": ["ccks42ee"], "use_tpu": true, "num_tpu_cores": 8, "vocab_size": 21128, "tpu_name": "jxtpu2", "do_eval": false, "do_test": true, "write_test_outputs": true, "use_tfrecords_if_existing": false, "do_train": false, "max_seq_length": 512, "max_answer_length": 64}'
 
 	
 gsutil mv gs://ccks2020/electra/finetuning_data/ccks42ee/eval.json gs://ccks2020/electra/finetuning_data/ccks42ee/backup.json
 gsutil cp gs://ccks2020/electra/finetuning_data/ccks42ee/train.json gs://ccks2020/electra/finetuning_data/ccks42ee/eval.json
-	
-	
-	
+gsutil cp gs://ccks/electra/finetuning_data/ccks42ee/train.json gs://ccks/electra/finetuning_data/ner/train.json
+gsutil cp gs://ccks/electra/finetuning_data/ccks42ee/dev.json gs://ccks/electra/finetuning_data/ner/dev.json
+gsutil cp gs://ccks/electra/finetuning_data/ccks42ee/eval.json gs://ccks/electra/finetuning_data/ner/eval.json
+
 	
 	
 	
