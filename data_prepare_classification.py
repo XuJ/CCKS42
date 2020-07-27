@@ -21,7 +21,8 @@ with open(os.path.join(data_dir, input_file), 'r', encoding='utf8') as input_fh,
     data = json.loads(org_line)
     org_text = data['content']
     text = re.sub(r'\s', ' ', org_text)
-    text = re.sub(r'<br>', '', text)
+    text = re.sub(r'<br>', ' ', text)
+    text = re.sub(r'&nbsp', ' ', text)
     event_type_orig = data['events'][0]['event_type']
     event_num = len(data['events'])
     event_type = '{}_{}'.format(event_type_orig, event_num)
@@ -62,7 +63,8 @@ with open(os.path.join(data_dir, pred_file), 'r', encoding='utf8') as input_fh, 
     data = json.loads(org_line)
     org_text = data['content']
     text = re.sub(r'\s', ' ', org_text)
-    text = re.sub(r'<br>', '', text)
+    text = re.sub(r'<br>', ' ', text)
+    text = re.sub(r'&nbsp', ' ', text)
     output_line = '\t'.join([text, '没有标签自己预测'])
     test_fh.write(output_line)
     test_fh.write('\n')

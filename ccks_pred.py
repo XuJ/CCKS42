@@ -2,7 +2,7 @@ import os
 import json
 import re
 
-model_name = 'electra_base'
+model_name = 'electra_large'
 ec_pred_file = 'data\\output\\{}\\ccks42ec_eval_preds.json'.format(model_name)
 ee_pred_file = 'data\\output\\{}\\ccks42ee_eval_1_preds.json'.format(model_name)
 ee_input_file = 'data\\ccks42ee\\eval.json'
