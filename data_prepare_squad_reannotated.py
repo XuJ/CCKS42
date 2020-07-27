@@ -10,6 +10,7 @@ data_dir = 'data\\ccks 4_2 Data'
 input_file = 'event_element_train_data_label.txt'
 pred_file = 'event_element_dev_data.txt'
 cl_pred_result_file = 'data\\output\\{}\\ccks42ec_eval_preds.json'.format(model_name)
+num_pred_result_file = 'data\\output\\{}\\ccks42num_eval_preds.json'.format(model_name)
 output_dir = 'data\\ccks42ee'
 train_file = 'train.json'
 dev_file = 'dev.json'
@@ -118,7 +119,8 @@ with open(os.path.join(data_dir, input_file), 'r', encoding='utf8') as input_fh,
         argument_loc_dict[a] = l
 
       for question_minor_idx, role in enumerate(role_list):
-        question = '{}|{}|{}：{}'.format(question_main_idx, event_type, role_entity_type_dict[role], role)
+        # question = '{}|{}|{}：{}'.format(question_main_idx, event_type, role_entity_type_dict[role], role)
+        question = '{}事件中第{}个{}是什么{}'.format(event_type, question_main_idx+1, role, role_entity_type_dict[role])
         if role in roles:
           argument = event[role].strip()
           argument_start = argument_loc_dict[argument]
@@ -159,6 +161,10 @@ text_label_dict = {}
 with open(cl_pred_result_file, 'r', encoding='utf8') as cl_pred_fh:
   for text, label in json.load(cl_pred_fh).items():
     text_label_dict[text] = label
+text_num_dict = {}
+with open(num_pred_result_file, 'r', encoding='utf8') as num_pred_fh:
+  for text, num in json.load(num_pred_fh).items():
+    text_num_dict[text] = num
 
 with open(os.path.join(data_dir, pred_file), 'r', encoding='utf8') as input_fh, open(
     os.path.join(output_dir, test_file), 'w', encoding='utf8') as test_fh:
@@ -184,12 +190,21 @@ with open(os.path.join(data_dir, pred_file), 'r', encoding='utf8') as input_fh, 
     if text in text_label_dict.keys():
       label = text_label_dict[text]
     else:
-      print(text)
-    event_type, r = label.split('_')
+      print('label', text)
+      continue
+    # event_type, r = label.split('_')
+    event_type = label
+    if text in text_num_dict.keys():
+      num = text_num_dict[text]
+    else:
+      print('num', text)
+      continue
+    r = num
     for question_main_idx in range(1, int(r) + 1):
       role_list = role_event_type_dict[event_type]
       for question_minor_idx, role in enumerate(role_list):
-        question = '{}|{}|{}：{}'.format(question_main_idx, event_type, role_entity_type_dict[role], role)
+        # question = '{}|{}|{}：{}'.format(question_main_idx, event_type, role_entity_type_dict[role], role)
+        question = '{}事件中第{}个{}是什么{}'.format(event_type, question_main_idx+1, role, role_entity_type_dict[role])
         qas = {
           'question': question,
           'id': '{}_{}_QUERY_{}_{}'.format(task.upper(), i, question_main_idx, question_minor_idx),
