@@ -4,12 +4,15 @@ import re
 
 model_name = 'electra_large'
 ec_pred_file = 'data\\output\\{}\\ccks42ec_eval_preds.json'.format(model_name)
+num_pred_file = 'data\\output\\{}\\ccks42num_eval_preds.json'.format(model_name)
 ee_pred_file = 'data\\output\\{}\\ccks42ee_eval_1_preds.json'.format(model_name)
 ee_input_file = 'data\\ccks42ee\\eval.json'
 output_file = 'data\\output\\{}\\result.txt'.format(model_name)
 
 with open(ec_pred_file, 'r', encoding='utf8') as ec_pred_fh:
   text_event_type_dict = json.load(ec_pred_fh)
+with open(num_pred_file, 'r', encoding='utf8') as num_pred_fh:
+  text_event_num_dict = json.load(num_pred_fh)
 with open(ee_pred_file, 'r', encoding='utf8') as ee_pred_fh:
   question_id_answer_dict = json.load(ee_pred_fh)
 event_types_count_dict = {}
@@ -26,7 +29,7 @@ with open(ee_input_file, 'r', encoding='utf8') as ee_input_fh, open(output_file,
     events = []
     text = i['paragraphs'][0]['context']
     event_type = text_event_type_dict[text]
-    event_type, event_num = event_type.split('_')
+    event_num = text_event_num_dict[text]
     event_num = int(event_num)
     doc_id = i['title']
     qas_dict = {}
@@ -40,7 +43,7 @@ with open(ee_input_file, 'r', encoding='utf8') as ee_input_fh, open(output_file,
       question_id = j['id']
       event_index = int(question_id.split('_')[3])
       question = j['question']
-      event_element = question.split('：')[-1]
+      event_element = question.split('是什么')[0].split('个')[-1]
       answer = question_id_answer_dict[question_id]
       qas_dict[event_index].append((event_element, answer))
     events = []
