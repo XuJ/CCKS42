@@ -1,10 +1,11 @@
 import os
 import json
-import re
 import argparse
+import time
 
 
 def run_prediction(data_dir, result_dir, model_name, task_names):
+  today = time.strftime('%Y%m%d_%H%M%S', time.gmtime())
   output_dir = os.path.join(data_dir, 'output', model_name)
   if not os.path.exists(output_dir):
     os.mkdir(output_dir)
@@ -15,7 +16,7 @@ def run_prediction(data_dir, result_dir, model_name, task_names):
   ee_pred_file = os.path.join(result_dir, 'models', model_name, 'results', '{}_qa'.format(task_names),
     'ccks42ee_eval_1_preds.json')
   ee_input_file = os.path.join(data_dir, 'ccks42ee', 'eval.json')
-  output_file = os.path.join(output_dir, 'result.txt')
+  output_file = os.path.join(output_dir, 'result_{}.txt'.format(today))
 
   with open(ec_pred_file, 'r', encoding='utf8') as ec_pred_fh:
     text_event_type_dict = json.load(ec_pred_fh)

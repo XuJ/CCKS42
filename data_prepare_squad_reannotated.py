@@ -7,12 +7,10 @@ import argparse
 from reannotate_training_data import ReAnnotate
 
 
-def run_data_prepare(data_dir, model_name, split):
+def run_data_prepare(data_dir, split, result_dir, model_name, task_names):
   input_dir = os.path.join(data_dir, 'ccks 4_2 Data')
   train_input_file = 'event_element_train_data_label.txt'
   test_input_file = 'event_element_dev_data.txt'
-  cl_pred_result_file = 'data\\output\\{}\\ccks42ec_eval_preds.json'.format(model_name)
-  num_pred_result_file = 'data\\output\\{}\\ccks42num_eval_preds.json'.format(model_name)
   output_dir = os.path.join(data_dir, 'ccks42ee')
   if not os.path.exists(output_dir):
     os.mkdir(output_dir)
@@ -116,6 +114,10 @@ def run_data_prepare(data_dir, model_name, split):
       json.dump(dev_json, dev_fh, ensure_ascii=False)
 
   elif split == 'test':
+    cl_pred_result_file = os.path.join(result_dir, 'models', model_name, 'results', '{}_cl'.format(task_names),
+      'ccks42ec_eval_preds.json')
+    num_pred_result_file = os.path.join(result_dir, 'models', model_name, 'results', '{}_cl'.format(task_names),
+      'ccks42num_eval_preds.json')
     test_json = {
       'version': 'v2.0', 'data': []
     }
@@ -177,10 +179,12 @@ def run_data_prepare(data_dir, model_name, split):
 def main():
   parser = argparse.ArgumentParser()
   parser.add_argument("--dir", required=True, help="location of all data")
-  parser.add_argument("--model", required=True, help="pretrained model name")
   parser.add_argument("--split", required=True, help="generate train data or test data")
+  parser.add_argument("--model", default=None, help="pretrained model name")
+  parser.add_argument("--result", default=None, help="location of result")
+  parser.add_argument("--tasks", default=None, help="name of tasks")
   args = parser.parse_args()
-  run_data_prepare(args.dir, args.model, args.split)
+  run_data_prepare(args.dir, args.split, args.model, args.result, args.tasks)
 
 
 if __name__ == '__main__':
