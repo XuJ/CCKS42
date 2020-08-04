@@ -22,10 +22,10 @@ def run_data_prepare(data_dir):
   test_file = 'eval.tsv'
   dev_ratio = 1 / 11
   random.seed(42)
-  with open(os.path.join(input_dir, input_file), 'r', encoding='utf8') as input_fh, open(
-      os.path.join(output_dir, train_file), 'w', encoding='utf8') as train_fh, open(os.path.join(output_dir, dev_file),
-    'w', encoding='utf8') as dev_fh, open(os.path.join(output_dir2, train_file), 'w',
-    encoding='utf8') as train_fh2, open(os.path.join(output_dir2, dev_file), 'w', encoding='utf8') as dev_fh2:
+  with tf.io.gfile.GFile(os.path.join(input_dir, input_file), 'r', encoding='utf8') as input_fh, tf.io.gfile.GFile(
+      os.path.join(output_dir, train_file), 'w', encoding='utf8') as train_fh, tf.io.gfile.GFile(os.path.join(output_dir, dev_file),
+    'w', encoding='utf8') as dev_fh, tf.io.gfile.GFile(os.path.join(output_dir2, train_file), 'w',
+    encoding='utf8') as train_fh2, tf.io.gfile.GFile(os.path.join(output_dir2, dev_file), 'w', encoding='utf8') as dev_fh2:
     for org_line in input_fh:
       data = json.loads(org_line)
       org_text = data['content']
@@ -52,8 +52,8 @@ def run_data_prepare(data_dir):
   multi_event_types_orig = ['股东减持', '股权质押', '股权冻结', '股东增持']
   print(single_event_types_orig + multi_event_types_orig)
 
-  with open(os.path.join(input_dir, pred_file), 'r', encoding='utf8') as input_fh, open(
-      os.path.join(output_dir, test_file), 'w', encoding='utf8') as test_fh, open(os.path.join(output_dir2, test_file),
+  with tf.io.gfile.GFile(os.path.join(input_dir, pred_file), 'r', encoding='utf8') as input_fh, tf.io.gfile.GFile(
+      os.path.join(output_dir, test_file), 'w', encoding='utf8') as test_fh, tf.io.gfile.GFile(os.path.join(output_dir2, test_file),
     'w', encoding='utf8') as test_fh2:
     for org_line in input_fh:
       data = json.loads(org_line)
