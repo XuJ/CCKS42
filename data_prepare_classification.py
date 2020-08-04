@@ -4,6 +4,7 @@ import json
 import re
 import random
 import argparse
+import tensorflow.compat.v1 as tf
 
 
 def run_data_prepare(data_dir):
@@ -12,10 +13,10 @@ def run_data_prepare(data_dir):
   pred_file = 'event_element_dev_data.txt'
   output_dir = os.path.join(data_dir, 'ccks42ec')
   output_dir2 = os.path.join(data_dir, 'ccks42num')
-  if not os.path.exists(output_dir):
-    os.mkdir(output_dir)
-  if not os.path.exists(output_dir2):
-    os.mkdir(output_dir2)
+  if not tf.io.gfile.exists(output_dir):
+    tf.io.gfile.makedirs(output_dir)
+  if not tf.io.gfile.exists(output_dir2):
+    tf.io.gfile.makedirs(output_dir2)
   train_file = 'train.tsv'
   dev_file = 'dev.tsv'
   test_file = 'eval.tsv'
