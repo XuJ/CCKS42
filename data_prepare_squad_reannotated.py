@@ -5,6 +5,7 @@ import re
 import random
 import argparse
 from reannotate_training_data import ReAnnotate
+import tensorflow.compat.v1 as tf
 
 
 def run_data_prepare(data_dir, split, result_dir, model_name, task_names):
@@ -12,8 +13,8 @@ def run_data_prepare(data_dir, split, result_dir, model_name, task_names):
   train_input_file = 'event_element_train_data_label.txt'
   test_input_file = 'event_element_dev_data.txt'
   output_dir = os.path.join(data_dir, 'ccks42ee')
-  if not os.path.exists(output_dir):
-    os.mkdir(output_dir)
+  if not tf.io.gfile.exists(output_dir):
+    tf.io.gfile.makedirs(output_dir)
   train_file = 'train.json'
   dev_file = 'dev.json'
   test_file = 'eval.json'
@@ -41,9 +42,9 @@ def run_data_prepare(data_dir, split, result_dir, model_name, task_names):
     dev_json = {
       'version': 'v2.0', 'data': []
     }
-    with open(os.path.join(input_dir, train_input_file), 'r', encoding='utf8') as input_fh, open(
-        os.path.join(output_dir, train_file), 'w', encoding='utf8') as train_fh, open(
-      os.path.join(output_dir, dev_file), 'w', encoding='utf8') as dev_fh:
+    with tf.io.gfile.GFile(os.path.join(input_dir, train_input_file), 'r') as input_fh, tf.io.gfile.GFile(
+        os.path.join(output_dir, train_file), 'w') as train_fh, tf.io.gfile.GFile(os.path.join(output_dir, dev_file),
+      'w') as dev_fh:
       for i, org_line in enumerate(input_fh):
         org_json = json.loads(org_line)
         org_text = org_json['content']
@@ -123,16 +124,16 @@ def run_data_prepare(data_dir, split, result_dir, model_name, task_names):
     }
     task = 'eval'
     text_label_dict = {}
-    with open(cl_pred_result_file, 'r', encoding='utf8') as cl_pred_fh:
+    with tf.io.gfile.GFile(cl_pred_result_file, 'r') as cl_pred_fh:
       for text, label in json.load(cl_pred_fh).items():
         text_label_dict[text] = label
     text_num_dict = {}
-    with open(num_pred_result_file, 'r', encoding='utf8') as num_pred_fh:
+    with tf.io.gfile.GFile(num_pred_result_file, 'r') as num_pred_fh:
       for text, num in json.load(num_pred_fh).items():
         text_num_dict[text] = num
 
-    with open(os.path.join(input_dir, test_input_file), 'r', encoding='utf8') as input_fh, open(
-        os.path.join(output_dir, test_file), 'w', encoding='utf8') as test_fh:
+    with tf.io.gfile.GFile(os.path.join(input_dir, test_input_file), 'r') as input_fh, tf.io.gfile.GFile(
+        os.path.join(output_dir, test_file), 'w') as test_fh:
       for i, org_line in enumerate(input_fh):
         org_json = json.loads(org_line)
         org_text = org_json['content']

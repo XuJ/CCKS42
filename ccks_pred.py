@@ -2,12 +2,14 @@ import os
 import json
 import argparse
 import time
+import tensorflow.compat.v1 as tf
 
 
 def run_prediction(data_dir, result_dir, model_name, task_names):
   today = time.strftime('%Y%m%d_%H%M%S', time.gmtime())
   output_dir = os.path.join(data_dir, 'output', model_name)
-  if not os.path.exists(output_dir):
+  if not tf.io.gfile.exists(output_dir):
+    tf.io.gfile.makedirs(output_dir)
     os.mkdir(output_dir)
   ec_pred_file = os.path.join(result_dir, 'models', model_name, 'results', '{}_cl'.format(task_names),
     'ccks42ec_eval_preds.json')
@@ -18,11 +20,11 @@ def run_prediction(data_dir, result_dir, model_name, task_names):
   ee_input_file = os.path.join(data_dir, 'ccks42ee', 'eval.json')
   output_file = os.path.join(output_dir, 'result_{}.txt'.format(today))
 
-  with open(ec_pred_file, 'r', encoding='utf8') as ec_pred_fh:
+  with tf.io.gfile.GFile(ec_pred_file, 'r') as ec_pred_fh:
     text_event_type_dict = json.load(ec_pred_fh)
-  with open(num_pred_file, 'r', encoding='utf8') as num_pred_fh:
+  with tf.io.gfile.GFile(num_pred_file, 'r') as num_pred_fh:
     text_event_num_dict = json.load(num_pred_fh)
-  with open(ee_pred_file, 'r', encoding='utf8') as ee_pred_fh:
+  with tf.io.gfile.GFile(ee_pred_file, 'r') as ee_pred_fh:
     question_id_answer_dict = json.load(ee_pred_fh)
   event_types_count_dict = {}
   for k, v in text_event_type_dict.items():
@@ -31,7 +33,7 @@ def run_prediction(data_dir, result_dir, model_name, task_names):
 
   multi = 0
   single = 0
-  with open(ee_input_file, 'r', encoding='utf8') as ee_input_fh, open(output_file, 'w', encoding='utf8') as output_fh:
+  with tf.io.gfile.GFile(ee_input_file, 'r') as ee_input_fh, tf.io.gfile.GFile(output_file, 'w') as output_fh:
     data = json.load(ee_input_fh)["data"]
     for _i, i in enumerate(data):
       print(_i)

@@ -53,8 +53,8 @@ def run_data_prepare(data_dir):
   print(single_event_types_orig + multi_event_types_orig)
 
   with tf.io.gfile.GFile(os.path.join(input_dir, pred_file), 'r') as input_fh, tf.io.gfile.GFile(
-      os.path.join(output_dir, test_file), 'w') as test_fh, tf.io.gfile.GFile(
-    os.path.join(output_dir2, test_file), 'w') as test_fh2:
+      os.path.join(output_dir, test_file), 'w') as test_fh, tf.io.gfile.GFile(os.path.join(output_dir2, test_file),
+    'w') as test_fh2:
     for org_line in input_fh:
       data = json.loads(org_line)
       org_text = data['content']
