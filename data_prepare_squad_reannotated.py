@@ -9,7 +9,7 @@ from data_cleaning import argument_cleaning
 from reannotate_training_data import ReAnnotate
 
 
-def run_data_prepare(data_dir, split, result_dir, model_name, task_names):
+def run_data_prepare(data_dir, split, result_dir, model_name):
   input_dir = os.path.join(data_dir, 'ccks 4_2 Data')
   train_input_file = 'event_element_train_data_label.txt'
   test_input_file = 'event_element_dev_data.txt'
@@ -72,7 +72,8 @@ def run_data_prepare(data_dir, split, result_dir, model_name, task_names):
             if role not in ['event_type', 'event_id']:
               argument = event[role].strip()
               if len(argument) > 0:
-                if text.find(argument) != -1:
+                loc = text.find(argument)
+                if re_annotate.digit_check(argument, loc):
                   arguments.append(argument)
                   roles.append(role)
 
@@ -114,9 +115,9 @@ def run_data_prepare(data_dir, split, result_dir, model_name, task_names):
       json.dump(dev_json, dev_fh, ensure_ascii=False)
 
   elif split == 'test':
-    cl_pred_result_file = os.path.join(result_dir, 'models', model_name, 'results', '{}_cl'.format(task_names),
+    cl_pred_result_file = os.path.join(result_dir, 'models', model_name, 'results', 'ccks42ec,ccks42num,ccks42ee_cl',
       'ccks42ec_eval_preds.json')
-    num_pred_result_file = os.path.join(result_dir, 'models', model_name, 'results', '{}_cl'.format(task_names),
+    num_pred_result_file = os.path.join(result_dir, 'models', model_name, 'results', 'ccks42ec,ccks42num,ccks42ee_cl',
       'ccks42num_eval_preds.json')
     test_json = {
       'version': 'v2.0', 'data': []
@@ -137,7 +138,6 @@ def run_data_prepare(data_dir, split, result_dir, model_name, task_names):
         org_json = json.loads(org_line)
         org_text = org_json['content']
         text = argument_cleaning(org_text)
-        doc_id = '{}_{}'.format(task.upper(), i)
 
         data = {
           'paragraphs': [{
@@ -158,7 +158,7 @@ def run_data_prepare(data_dir, split, result_dir, model_name, task_names):
           print('num', text)
           continue
         r = num
-        for question_main_idx in range(1, int(r) + 1):
+        for question_main_idx in range(int(r)):
           role_list = role_event_type_dict[event_type]
           for question_minor_idx, role in enumerate(role_list):
             # question = '{}|{}|{}：{}'.format(question_main_idx, event_type, role_entity_type_dict[role], role)
@@ -179,11 +179,10 @@ def main():
   parser = argparse.ArgumentParser()
   parser.add_argument("--dir", required=True, help="location of all data")
   parser.add_argument("--split", required=True, help="generate train data or test data")
-  parser.add_argument("--model", default=None, help="pretrained model name")
   parser.add_argument("--result", default=None, help="location of result")
-  parser.add_argument("--tasks", default=None, help="name of tasks")
+  parser.add_argument("--model", default=None, help="pretrained model name")
   args = parser.parse_args()
-  run_data_prepare(args.dir, args.split, args.result, args.model, args.tasks)
+  run_data_prepare(args.dir, args.split, args.result, args.model)
 
 
 if __name__ == '__main__':
