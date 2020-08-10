@@ -1,4 +1,5 @@
 import itertools
+import re
 
 
 class ReAnnotate(object):
@@ -7,7 +8,27 @@ class ReAnnotate(object):
     self.sentences = self.text.split('。|！|？')
 
   def get_locs(self, argument):
-    res = [i for i in range(len(self.text)) if self.text.startswith(argument, i)]
+    def digit_check(loc):
+      '''
+      有的论元是简单的单字数字，例如“2”或“1”，
+      这类数字极可能被错误地匹配到其他地方去，例如匹配到“2019年”或“第1号法令”等
+      所以对于论元是数字的情形，增加一层校验，必须左右的字节不是数字才能输出
+      即不会抽取数字中的数字作为论元
+      :param loc: 在text中的位置
+      :return: True表示通过检验，False表示为通过校验
+      '''
+      if loc > 0 and re.match(r'\d', argument[0]) and re.match(r'\d', self.text[loc - 1]):
+        return False
+      elif loc < len(self.text) - 1 and re.match(r'\d', argument[-1]) and re.match(r'\d', self.text[loc + 1]):
+        return False
+      else:
+        return True
+
+    res = []
+    for i in range(len(self.text)):
+      if self.text.startswith(argument, i):
+        if digit_check(i):
+          res.append(i)
     return res
 
   def get_sentence(self, argument):

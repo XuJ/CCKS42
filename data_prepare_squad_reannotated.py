@@ -1,11 +1,12 @@
-import os
-import json
-
-import re
-import random
 import argparse
-from reannotate_training_data import ReAnnotate
+import json
+import os
+import random
+
 import tensorflow.compat.v1 as tf
+
+from data_cleaning import argument_cleaning
+from reannotate_training_data import ReAnnotate
 
 
 def run_data_prepare(data_dir, split, result_dir, model_name, task_names):
@@ -48,9 +49,7 @@ def run_data_prepare(data_dir, split, result_dir, model_name, task_names):
       for i, org_line in enumerate(input_fh):
         org_json = json.loads(org_line)
         org_text = org_json['content']
-        text = re.sub(r'\s', ' ', org_text)
-        text = re.sub(r'<br>', ' ', text)
-        text = re.sub(r'&nbsp', ' ', text)
+        text = argument_cleaning(org_text)
         re_annotate = ReAnnotate(text)
 
         if random.random() < dev_ratio:
@@ -137,9 +136,8 @@ def run_data_prepare(data_dir, split, result_dir, model_name, task_names):
       for i, org_line in enumerate(input_fh):
         org_json = json.loads(org_line)
         org_text = org_json['content']
-        text = re.sub(r'\s', ' ', org_text)
-        text = re.sub(r'<br>', ' ', text)
-        text = re.sub(r'&nbsp', ' ', text)
+        text = argument_cleaning(org_text)
+        doc_id = '{}_{}'.format(task.upper(), i)
 
         data = {
           'paragraphs': [{

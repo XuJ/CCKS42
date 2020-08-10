@@ -1,10 +1,11 @@
-import os
-import json
-
-import re
-import random
 import argparse
+import json
+import os
+import random
+
 import tensorflow.compat.v1 as tf
+
+from data_cleaning import argument_cleaning
 
 
 def run_data_prepare(data_dir):
@@ -29,9 +30,7 @@ def run_data_prepare(data_dir):
     for org_line in input_fh:
       data = json.loads(org_line)
       org_text = data['content']
-      text = re.sub(r'\s', ' ', org_text)
-      text = re.sub(r'<br>', ' ', text)
-      text = re.sub(r'&nbsp', ' ', text)
+      text = argument_cleaning(org_text)
       event_type_orig = data['events'][0]['event_type']
       event_num = str(int(len(data['events'])))
       event_type = event_type_orig
@@ -58,9 +57,7 @@ def run_data_prepare(data_dir):
     for org_line in input_fh:
       data = json.loads(org_line)
       org_text = data['content']
-      text = re.sub(r'\s', ' ', org_text)
-      text = re.sub(r'<br>', ' ', text)
-      text = re.sub(r'&nbsp', ' ', text)
+      text = argument_cleaning(org_text)
       output_line = '\t'.join([text, '没有标签自己预测'])
       test_fh.write(output_line)
       test_fh.write('\n')
