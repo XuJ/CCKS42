@@ -185,7 +185,7 @@ def main():
   parser.add_argument("--result", default=None, help="location of result")
   parser.add_argument("--tasks", default=None, help="name of tasks")
   args = parser.parse_args()
-  run_data_prepare(args.dir, args.split, args.model, args.result, args.tasks)
+  run_data_prepare(args.dir, args.split, args.result, args.model, args.tasks)
 
 
 if __name__ == '__main__':
