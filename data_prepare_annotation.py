@@ -2,7 +2,7 @@ import os
 import json
 
 from reannotate_training_data import ReAnnotate
-from data_cleaning import argument_cleaning_v1
+from data_cleaning import argument_cleaning_v3
 
 data_dir = 'data\\ccks 4_2 Data'
 input_file = 'event_element_train_data_label.txt'
@@ -38,7 +38,7 @@ with open(os.path.join(data_dir, input_file), 'r', encoding='utf8') as input_fh:
     org_json = json.loads(org_line)
     org_text = org_json['content']
     doc_id = org_json['doc_id']
-    text = argument_cleaning_v1(org_text)
+    text = argument_cleaning_v3(org_text)
     re_annotate = ReAnnotate(text)
 
     qas = []
