@@ -5,7 +5,7 @@ import random
 
 import tensorflow.compat.v1 as tf
 
-from data_cleaning import argument_cleaning
+from data_cleaning import argument_cleaning_v3
 from reannotate_training_data import ReAnnotate
 
 
@@ -49,7 +49,7 @@ def run_data_prepare(data_dir, split, result_dir, model_name):
       for i, org_line in enumerate(input_fh):
         org_json = json.loads(org_line)
         org_text = org_json['content']
-        text = argument_cleaning(org_text)
+        text = argument_cleaning_v3(org_text)
         re_annotate = ReAnnotate(text)
 
         if random.random() < dev_ratio:
@@ -136,7 +136,7 @@ def run_data_prepare(data_dir, split, result_dir, model_name):
       for i, org_line in enumerate(input_fh):
         org_json = json.loads(org_line)
         org_text = org_json['content']
-        text = argument_cleaning(org_text)
+        text = argument_cleaning_v3(org_text)
 
         data = {
           'paragraphs': [{
