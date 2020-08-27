@@ -75,6 +75,8 @@ def run_data_prepare(data_dir, split, result_dir, model_name):
                 if len(re_annotate.get_locs(argument)) > 0:
                   arguments.append(argument)
                   roles.append(role)
+                else:
+                  print('ccks42ee get locs error:', org_json['doc_id'], event_type, role, argument)
 
           if len(roles) == 0:
             continue
