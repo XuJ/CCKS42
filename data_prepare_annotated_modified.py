@@ -5,8 +5,11 @@ import os
 import tensorflow.compat.v1 as tf
 
 
-def run_data_prepare(data_dir):
-  input_dir = os.path.join(data_dir, 'ccks42ee')
+def run_data_prepare(data_dir, part):
+  if part == 'full':
+    input_dir = os.path.join(data_dir, 'ccks42ee')
+  else:
+    input_dir = os.path.join(data_dir, 'ccks42{}'.format(part))
   annotated_dir = os.path.join(data_dir, 'annotated')
   # multi_event_types = ['股东减持', '股东增持', '股权质押', '股权冻结']
   multi_event_types = ['股东减持']
@@ -100,8 +103,9 @@ def run_data_prepare(data_dir):
 def main():
   parser = argparse.ArgumentParser()
   parser.add_argument("--dir", required=True, help="location of all data")
+  parser.add_argument("--part", default='full', help="build full/single/multi event model")
   args = parser.parse_args()
-  run_data_prepare(args.dir)
+  run_data_prepare(args.dir, args.part)
 
 
 if __name__ == '__main__':

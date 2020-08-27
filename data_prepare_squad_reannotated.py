@@ -9,11 +9,14 @@ from data_cleaning import argument_cleaning_v3
 from reannotate_training_data import ReAnnotate
 
 
-def run_data_prepare(data_dir, split, result_dir, model_name):
+def run_data_prepare(data_dir, split, part, result_dir, model_name):
   input_dir = os.path.join(data_dir, 'ccks 4_2 Data')
   train_input_file = 'event_element_train_data_label.txt'
   test_input_file = 'event_element_dev_data.txt'
-  output_dir = os.path.join(data_dir, 'ccks42ee')
+  if part == 'full':
+    output_dir = os.path.join(data_dir, 'ccks42ee')
+  else:
+    output_dir = os.path.join(data_dir, 'ccks42{}'.format(part))
   if not tf.io.gfile.exists(output_dir):
     tf.io.gfile.makedirs(output_dir)
   train_file = 'train.json'
@@ -35,6 +38,8 @@ def run_data_prepare(data_dir, split, result_dir, model_name):
     '质押开始日期': '时间', '质押结束日期': '时间', '增持金额': '数字&单位', '增持的股东': '公司/人名', '增持开始日期': '时间', '减持金额': '数字&单位',
     '减持的股东': '公司/人名', '减持开始日期': '时间',
   }
+  single_event_types = ['重大资产损失', '高层死亡', '重大对外赔付', '重大安全事故', '破产清算']
+  multi_event_types = ['股东减持', '股权质押', '股权冻结', '股东增持']
 
   if split == 'train':
     train_json = {
@@ -57,6 +62,10 @@ def run_data_prepare(data_dir, split, result_dir, model_name):
         else:
           task = 'train'
 
+        if (part == 'single') and (org_json['events'][0]['event_type'] in multi_event_types):
+          continue
+        if (part == 'multi') and (org_json['events'][0]['event_type'] in single_event_types):
+          continue
         data = {
           'paragraphs': [{
             'id': '{}_{}'.format(task.upper(), i), 'context': text, 'qas': [],
@@ -116,10 +125,17 @@ def run_data_prepare(data_dir, split, result_dir, model_name):
       json.dump(dev_json, dev_fh, ensure_ascii=False)
 
   elif split == 'test':
-    cl_pred_result_file = os.path.join(result_dir, 'models', model_name, 'results', 'ccks42ec,ccks42reg,ccks42ee_cl',
-      'ccks42ec_eval_preds.json')
-    num_pred_result_file = os.path.join(result_dir, 'models', model_name, 'results', 'ccks42ec,ccks42reg,ccks42ee_cl',
-      'ccks42reg_eval_preds.json')
+    if part == 'full':
+      cl_pred_result_file = os.path.join(result_dir, 'models', model_name, 'results', 'ccks42ec,ccks42reg,ccks42ee_cl',
+        'ccks42ec_eval_preds.json')
+      num_pred_result_file = os.path.join(result_dir, 'models', model_name, 'results', 'ccks42ec,ccks42reg,ccks42ee_cl',
+        'ccks42reg_eval_preds.json')
+    else:
+      cl_pred_result_file = os.path.join(result_dir, 'models', model_name, 'results', 'ccks42ec,ccks42reg_cl',
+        'ccks42ec_eval_preds.json')
+      num_pred_result_file = os.path.join(result_dir, 'models', model_name, 'results', 'ccks42ec,ccks42reg_cl',
+        'ccks42reg_eval_preds.json')
+
     test_json = {
       'version': 'v2.0', 'data': []
     }
@@ -140,12 +156,6 @@ def run_data_prepare(data_dir, split, result_dir, model_name):
         org_text = org_json['content']
         text = argument_cleaning_v3(org_text)
 
-        data = {
-          'paragraphs': [{
-            'id': '{}_{}'.format(task.upper(), i), 'context': text, 'qas': [],
-          }], 'id': '{}_{}'.format(task.upper(), i), 'title': org_json['doc_id'],
-        }
-
         if text in text_label_dict.keys():
           label = text_label_dict[text]
         else:
@@ -159,6 +169,17 @@ def run_data_prepare(data_dir, split, result_dir, model_name):
           print('num', text)
           continue
         r = num
+
+        if (part == 'single') and (event_type in multi_event_types):
+          continue
+        if (part == 'multi') and (event_type in single_event_types):
+          continue
+
+        data = {
+          'paragraphs': [{
+            'id': '{}_{}'.format(task.upper(), i), 'context': text, 'qas': [],
+          }], 'id': '{}_{}'.format(task.upper(), i), 'title': org_json['doc_id'],
+        }
         for question_main_idx in range(int(r)):
           role_list = role_event_type_dict[event_type]
           for question_minor_idx, role in enumerate(role_list):
@@ -180,10 +201,11 @@ def main():
   parser = argparse.ArgumentParser()
   parser.add_argument("--dir", required=True, help="location of all data")
   parser.add_argument("--split", required=True, help="generate train data or test data")
+  parser.add_argument("--part", default='full', help="build full/single/multi event model")
   parser.add_argument("--result", default=None, help="location of result")
   parser.add_argument("--model", default=None, help="pretrained model name")
   args = parser.parse_args()
-  run_data_prepare(args.dir, args.split, args.result, args.model)
+  run_data_prepare(args.dir, args.split, args.part, args.result, args.model)
 
 
 if __name__ == '__main__':
