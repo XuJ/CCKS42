@@ -53,10 +53,11 @@ with open(os.path.join(data_dir, input_file), 'r', encoding='utf8') as input_fh:
         if role not in ['event_type', 'event_id']:
           argument = event[role].strip()
           if len(argument) > 0:
-            loc = text.find(argument)
-            if re_annotate.digit_check(argument, loc):
+            if len(re_annotate.get_locs(argument)) > 0:
               arguments.append(argument)
               roles.append(role)
+            else:
+              print('ccks42ee get locs error:', org_json['doc_id'], event_type, role, argument)
 
       if len(roles) == 0:
         continue
