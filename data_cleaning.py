@@ -52,8 +52,8 @@ def argument_cleaning_v3(content):
     post_chinese_char = True
     if start > 0:
       pre_chinese_char = is_chinese_char(content[start - 1])
-    if end < len(content) - 1:
-      post_chinese_char = is_chinese_char(content[end + 1])
+    if end < len(content):
+      post_chinese_char = is_chinese_char(content[end])
     if pre_chinese_char:
       if post_chinese_char:
         pass
