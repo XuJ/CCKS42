@@ -2,7 +2,7 @@ import os
 import json
 
 from reannotate_training_data import ReAnnotate
-from data_cleaning import argument_cleaning_v1
+from data_cleaning import argument_cleaning_v3
 
 data_dir = 'data\\ccks 4_2 Data'
 input_file = 'event_element_train_data_label.txt'
@@ -38,7 +38,7 @@ with open(os.path.join(data_dir, input_file), 'r', encoding='utf8') as input_fh:
     org_json = json.loads(org_line)
     org_text = org_json['content']
     doc_id = org_json['doc_id']
-    text = argument_cleaning_v1(org_text)
+    text = argument_cleaning_v3(org_text)
     re_annotate = ReAnnotate(text)
 
     qas = []
@@ -53,10 +53,11 @@ with open(os.path.join(data_dir, input_file), 'r', encoding='utf8') as input_fh:
         if role not in ['event_type', 'event_id']:
           argument = event[role].strip()
           if len(argument) > 0:
-            loc = text.find(argument)
-            if re_annotate.digit_check(argument, loc):
+            if len(re_annotate.get_locs(argument)) > 0:
               arguments.append(argument)
               roles.append(role)
+            else:
+              print('ccks42ee get locs error:', org_json['doc_id'], event_type, role, argument)
 
       if len(roles) == 0:
         continue
