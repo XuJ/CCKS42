@@ -29,21 +29,30 @@ def run_data_prepare(data_dir):
       for line in fh:
         data = json.loads(line)
         doc_id = data['key']
+        sorted_answers = []
         answers = []
+        rank_no = 0
+        backup_dict = {}
         for qas in data['qas']:
           answer = {}
           for qas_sub in qas:
             role = qas_sub['question'].strip()
             if len(qas_sub['answers']) == 0:
-              # print(doc_id, qas_sub)
-              continue
-            ans = qas_sub['answers'][0]
+              ans = {
+                'text': '无答案', 'start': backup_dict.get(role, 0)
+              }
+            else:
+              ans = qas_sub['answers'][0]
             answer[role] = ans
-          answers.append(answer)
+            rank_no += ans['start']
+            backup_dict[role] = ans['start']
+          answers.append((rank_no, answer))
+        for rank_no, answer in sorted(answers, key=lambda x: x[0]):
+          sorted_answers.append(answer)
         if doc_id in annotated_dict.keys():
           print('duplicate doc_id:', doc_id)
           continue
-        annotated_dict[doc_id] = answers
+        annotated_dict[doc_id] = sorted_answers
 
   tasks = ['train', 'dev']
   for task in tasks:
@@ -68,7 +77,7 @@ def run_data_prepare(data_dir):
         for question_main_idx, answer in enumerate(annotated_ans):
           for question_minor_idx, role in enumerate(role_list):
             question = '{}事件中第{}个{}是什么{}'.format(event_type, question_main_idx + 1, role, role_entity_type_dict[role])
-            if role in answer.keys():
+            if (role in answer.keys()) and (answer[role]['text'] != '无答案'):
               answers = [{
                 'text': answer[role]['text'].strip(), 'answer_start': int(answer[role]['start'])
               }]
