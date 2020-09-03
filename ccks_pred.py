@@ -10,11 +10,11 @@ def run_prediction(data_dir, result_dir, model_name):
   output_dir = os.path.join(data_dir, 'output', model_name)
   if not tf.io.gfile.exists(output_dir):
     tf.io.gfile.makedirs(output_dir)
-  ec_pred_file = os.path.join(result_dir, 'models', model_name, 'results', 'ccks42ec,ccks42num,ccks42ee_cl',
+  ec_pred_file = os.path.join(result_dir, 'models', model_name, 'results', 'ccks42ec,ccks42reg,ccks42ee_cl',
     'ccks42ec_eval_preds.json')
-  num_pred_file = os.path.join(result_dir, 'models', model_name, 'results', 'ccks42ec,ccks42num,ccks42ee_cl',
-    'ccks42num_eval_preds.json')
-  ee_pred_file = os.path.join(result_dir, 'models', model_name, 'results', 'ccks42ec,ccks42num,ccks42ee_qa',
+  num_pred_file = os.path.join(result_dir, 'models', model_name, 'results', 'ccks42ec,ccks42reg,ccks42ee_cl',
+    'ccks42reg_eval_preds.json')
+  ee_pred_file = os.path.join(result_dir, 'models', model_name, 'results', 'ccks42ec,ccks42reg,ccks42ee_qa',
     'ccks42ee_eval_1_preds.json')
   ee_input_file = os.path.join(data_dir, 'ccks42ee', 'eval.json')
   output_file = os.path.join(output_dir, 'result_{}.txt'.format(today))

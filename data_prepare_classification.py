@@ -13,7 +13,7 @@ def run_data_prepare(data_dir):
   input_file = 'event_element_train_data_label.txt'
   pred_file = 'event_element_dev_data.txt'
   output_dir = os.path.join(data_dir, 'ccks42ec')
-  output_dir2 = os.path.join(data_dir, 'ccks42num')
+  output_dir2 = os.path.join(data_dir, 'ccks42reg')
   if not tf.io.gfile.exists(output_dir):
     tf.io.gfile.makedirs(output_dir)
   if not tf.io.gfile.exists(output_dir2):

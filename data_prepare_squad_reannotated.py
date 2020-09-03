@@ -116,10 +116,10 @@ def run_data_prepare(data_dir, split, result_dir, model_name):
       json.dump(dev_json, dev_fh, ensure_ascii=False)
 
   elif split == 'test':
-    cl_pred_result_file = os.path.join(result_dir, 'models', model_name, 'results', 'ccks42ec,ccks42num,ccks42ee_cl',
+    cl_pred_result_file = os.path.join(result_dir, 'models', model_name, 'results', 'ccks42ec,ccks42reg,ccks42ee_cl',
       'ccks42ec_eval_preds.json')
-    num_pred_result_file = os.path.join(result_dir, 'models', model_name, 'results', 'ccks42ec,ccks42num,ccks42ee_cl',
-      'ccks42num_eval_preds.json')
+    num_pred_result_file = os.path.join(result_dir, 'models', model_name, 'results', 'ccks42ec,ccks42reg,ccks42ee_cl',
+      'ccks42reg_eval_preds.json')
     test_json = {
       'version': 'v2.0', 'data': []
     }
