@@ -3,7 +3,7 @@ import os
 import re
 
 data_dir = 'data\\output\\electra_large'
-result_file = 'electra_annot_finetuning_data_output_electra_large_result_20200826_092123.txt'
+result_file = 'electra_annot_finetuning_data_output_electra_large_result_20200904_112720.txt'
 output_file = '{}_single.txt'.format(result_file.split('.')[0])
 output_file2 = '{}_full.txt'.format(result_file.split('.')[0])
 abbr_file = 'data\\abbr_map.json'
@@ -49,7 +49,8 @@ with open(os.path.join(data_dir, result_file), 'r', encoding='utf8') as input_fh
     result2 = json.dumps(data, ensure_ascii=False)
     output_fh2.write(result2)
     output_fh2.write('\n')
-    data['events'] = [data['events'][0]]
+    if len(data['events'])>0:
+      data['events'] = [data['events'][0]]
     result = json.dumps(data, ensure_ascii=False)
     output_fh.write(result)
     output_fh.write('\n')
