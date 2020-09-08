@@ -62,6 +62,7 @@ def run_data_prepare(data_dir, split, part, result_dir, model_name):
         else:
           task = 'train'
 
+        assert org_json['events'][0]['event_type'] in single_event_types + multi_event_types
         if (part == 'single') and (org_json['events'][0]['event_type'] in multi_event_types):
           continue
         if (part == 'multi') and (org_json['events'][0]['event_type'] in single_event_types):
