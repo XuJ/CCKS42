@@ -24,7 +24,7 @@ def run_prediction(data_dir, part, result_dir, model_name):
     num_pred_file = os.path.join(result_dir, 'models', model_name, 'results', 'ccks42ec,ccks42reg_cl',
       'ccks42reg_eval_preds.json')
     ee_pred_file = os.path.join(result_dir, 'models', model_name, 'results', 'ccks42{}_qa'.format(part),
-      'ccks42ee_eval_1_preds.json')
+      'ccks42{}_eval_1_preds.json'.format(part))
     ee_input_file = os.path.join(data_dir, 'ccks42{}'.format(part), 'eval.json')
   output_file = os.path.join(output_dir, 'result_{}_{}.txt'.format(part, today))
 
