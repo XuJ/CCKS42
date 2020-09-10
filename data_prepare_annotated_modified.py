@@ -12,7 +12,7 @@ def run_data_prepare(data_dir, part):
     input_dir = os.path.join(data_dir, 'ccks42{}'.format(part))
   annotated_dir = os.path.join(data_dir, 'annotated')
   # multi_event_types = ['股东减持', '股东增持', '股权质押', '股权冻结']
-  multi_event_types = ['股东减持']
+  multi_event_types = ['股东减持', '股东增持']
   role_event_type_dict = {
     '高层死亡': ['公司名称', '高层人员', '高层职务', '死亡/失联时间', '死亡年龄'], '破产清算': ['公告时间', '公司名称', '公司行业', '受理法院', '裁定时间'],
     '重大资产损失': ['公告时间', '公司名称', '损失金额', '其他损失'], '重大对外赔付': ['公告时间', '公司名称', '赔付金额', '赔付对象'],
