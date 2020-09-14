@@ -1,6 +1,7 @@
 import argparse
 import json
 import os
+from collections import deque
 
 import tensorflow.compat.v1 as tf
 
@@ -32,47 +33,20 @@ def run_data_prepare(data_dir, part):
       for line in fh:
         data = json.loads(line)
         doc_id = data['key']
-        sorted_answers = []
-        answers = []
-        backup_dict = {}
-        all_roles = set(role_event_type_dict[event_type])
+        event_cards = []
         for qas in data['qas']:
-          rank_no = 0
-          answer = {}
-          # 按缺失值补全role，方便后续作排序
-          valid_roles = set()
+          event_card = {}
           for qas_sub in qas:
-            role = qas_sub['question'].strip()
-            valid_roles.add(role)
             if len(qas_sub['answers']) > 0:
+              role = qas_sub['question'].strip()
               ans = qas_sub['answers'][0]
-              backup_dict[role] = ans['start']
-          assert valid_roles.issubset(all_roles)
-          for empty_role in all_roles-valid_roles:
-            empty_qas_sub = {
-              'answers': [],
-              'question': empty_role
-            }
-            qas.append(empty_qas_sub)
-          for qas_sub in qas:
-            role = qas_sub['question'].strip()
-            if len(qas_sub['answers']) == 0:
-              ans = {
-                'text': '无答案', 'start': backup_dict.get(role, 0)
-              }
-            else:
-              ans = qas_sub['answers'][0]
-            answer[role] = ans
-            rank_no += ans['start']
-            backup_dict[role] = ans['start']
-          answers.append((rank_no, answer))
-
-        for rank_no, answer in sorted(answers, key=lambda x: x[0]):
-          sorted_answers.append(answer)
+              event_card[role] = ans
+          if len(event_card) > 0:
+            event_cards.append(event_card)
         if doc_id in annotated_dict.keys():
           print('duplicate doc_id:', doc_id)
           continue
-        annotated_dict[doc_id] = sorted_answers
+        annotated_dict[doc_id] = resort_deque(event_cards)
 
   tasks = ['train', 'dev']
   for task in tasks:
@@ -114,6 +88,32 @@ def run_data_prepare(data_dir, part):
       json.dump(orig_json, output_fh, ensure_ascii=False)
     tf.io.gfile.remove(os.path.join(input_dir, input_file))
     print('Done')
+
+
+def resort_deque(cards):
+  d = deque()
+  for current_card in cards:
+    if len(d) == 0:
+      d.append(current_card)
+    else:
+      c = 0
+      continue_flag = True
+      while c < len(d) and continue_flag:
+        last_card = d[-1]
+        for role in last_card.keys():
+          if role in current_card.keys():
+            if int(current_card[role]['start']) > int(last_card[role]['start']):
+              continue_flag = False
+              break
+        if continue_flag:
+          d.rotate(1)
+          c += 1
+      if continue_flag:
+        d.appendleft(current_card)
+      else:
+        d.append(current_card)
+        d.rotate(-c)
+  return d
 
 
 def main():
