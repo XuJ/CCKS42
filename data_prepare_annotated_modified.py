@@ -34,10 +34,26 @@ def run_data_prepare(data_dir, part):
         doc_id = data['key']
         sorted_answers = []
         answers = []
-        rank_no = 0
         backup_dict = {}
+        all_roles = set(role_event_type_dict[event_type])
         for qas in data['qas']:
+          rank_no = 0
           answer = {}
+          # 按缺失值补全role，方便后续作排序
+          valid_roles = set()
+          for qas_sub in qas:
+            role = qas_sub['question'].strip()
+            valid_roles.add(role)
+            if len(qas_sub['answers']) > 0:
+              ans = qas_sub['answers'][0]
+              backup_dict[role] = ans['start']
+          assert valid_roles.issubset(all_roles)
+          for empty_role in all_roles-valid_roles:
+            empty_qas_sub = {
+              'answers': [],
+              'question': empty_role
+            }
+            qas.append(empty_qas_sub)
           for qas_sub in qas:
             role = qas_sub['question'].strip()
             if len(qas_sub['answers']) == 0:
@@ -50,6 +66,7 @@ def run_data_prepare(data_dir, part):
             rank_no += ans['start']
             backup_dict[role] = ans['start']
           answers.append((rank_no, answer))
+
         for rank_no, answer in sorted(answers, key=lambda x: x[0]):
           sorted_answers.append(answer)
         if doc_id in annotated_dict.keys():
