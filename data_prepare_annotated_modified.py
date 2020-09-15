@@ -71,7 +71,7 @@ def run_data_prepare(data_dir, part):
         for question_main_idx, answer in enumerate(annotated_ans):
           for question_minor_idx, role in enumerate(role_list):
             question = '{}事件中第{}个{}是什么{}'.format(event_type, question_main_idx + 1, role, role_entity_type_dict[role])
-            if (role in answer.keys()) and (answer[role]['text'] != '无答案'):
+            if role in answer.keys():
               answers = [{
                 'text': answer[role]['text'].strip(), 'answer_start': int(answer[role]['start'])
               }]
