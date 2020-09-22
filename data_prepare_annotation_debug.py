@@ -47,9 +47,10 @@ def run_data_prepare(data_dir):
       offsets = argument_cleaning_v3_debug(org_text)
       offsets_dict[doc_id] = offsets
 
-  for event_type in multi_event_types:
-    tf.io.gfile.rename(os.path.join(annotated_dir, '{}.json'.format(event_type)),
-      os.path.join(annotated_dir, '{}_backup.json'.format(event_type)), True)
+  for event_type in multi_event_types[1:]:
+  # for event_type in multi_event_types:
+    # tf.io.gfile.rename(os.path.join(annotated_dir, '{}.json'.format(event_type)),
+    #   os.path.join(annotated_dir, '{}_backup.json'.format(event_type)), True)
     with tf.io.gfile.GFile(os.path.join(annotated_dir, '{}_backup.json'.format(event_type)),
         'r') as input_fh, tf.io.gfile.GFile(os.path.join(annotated_dir, '{}.json'.format(event_type)),
         'w') as output_fh:
