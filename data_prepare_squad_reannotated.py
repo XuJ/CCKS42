@@ -127,9 +127,9 @@ def run_data_prepare(data_dir, split, part, result_dir, model_name):
 
   elif split == 'test':
     if part == 'full':
-      cl_pred_result_file = os.path.join(result_dir, 'models', model_name, 'results', 'ccks42ec,ccks42reg,ccks42ee_cl',
+      cl_pred_result_file = os.path.join(result_dir, 'models', model_name, 'results', 'ccks42ec,ccks42reg_cl',
         'ccks42ec_eval_preds.json')
-      num_pred_result_file = os.path.join(result_dir, 'models', model_name, 'results', 'ccks42ec,ccks42reg,ccks42ee_cl',
+      num_pred_result_file = os.path.join(result_dir, 'models', model_name, 'results', 'ccks42ec,ccks42reg_cl',
         'ccks42reg_eval_preds.json')
     else:
       cl_pred_result_file = os.path.join(result_dir, 'models', model_name, 'results', 'ccks42ec,ccks42reg_cl',
