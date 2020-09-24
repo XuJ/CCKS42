@@ -7,17 +7,17 @@ import tensorflow.compat.v1 as tf
 
 def run_prediction(data_dir, part, result_dir, model_name):
   today = time.strftime('%Y%m%d_%H%M%S', time.gmtime())
-  output_dir = os.path.join(data_dir, 'output', model_name)
+  output_dir = os.path.join(data_dir, 'finetuning_data', 'output', model_name)
   if not tf.io.gfile.exists(output_dir):
     tf.io.gfile.makedirs(output_dir)
   if part == 'full':
-    ec_pred_file = os.path.join(result_dir, 'models', model_name, 'results', 'ccks42ec,ccks42reg,ccks42ee_cl',
+    ec_pred_file = os.path.join(result_dir, 'models', model_name, 'results', 'ccks42ec,ccks42reg_cl',
       'ccks42ec_eval_preds.json')
-    num_pred_file = os.path.join(result_dir, 'models', model_name, 'results', 'ccks42ec,ccks42reg,ccks42ee_cl',
+    num_pred_file = os.path.join(result_dir, 'models', model_name, 'results', 'ccks42ec,ccks42reg_cl',
       'ccks42reg_eval_preds.json')
-    ee_pred_file = os.path.join(result_dir, 'models', model_name, 'results', 'ccks42ec,ccks42reg,ccks42ee_qa',
-      'ccks42ee_eval_1_preds.json')
-    ee_input_file = os.path.join(data_dir, 'ccks42ee', 'eval.json')
+    ee_pred_file = os.path.join(data_dir, 'models', model_name, 'results', 'ccks42bagging', 'vote1',
+      'ccks42bagging_eval_1_preds.json')
+    ee_input_file = os.path.join(result_dir, 'finetuning_data', 'ccks42ee', 'eval.json')
   else:
     ec_pred_file = os.path.join(result_dir, 'models', model_name, 'results', 'ccks42ec,ccks42reg_cl',
       'ccks42ec_eval_preds.json')
