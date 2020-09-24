@@ -3,10 +3,10 @@ import os
 import re
 
 data_dir = 'data\\output\\electra_large'
-result_file = 'electra_annot_finetuning_data_output_electra_large_result_20200910_094513.txt'
+result_file = 'electra_annot_finetuning_data_output_electra_large_result_20200915_153251.txt'
 output_file = '{}_single.txt'.format(result_file.split('.')[0])
 output_file2 = '{}_full.txt'.format(result_file.split('.')[0])
-abbr_file = 'data\\abbr_map.json'
+# abbr_file = 'data\\abbr_map.json'
 pred_file = 'data\\ccks 4_2 Data\\event_element_dev_data.txt'
 
 doc_id_text_dict = {}
@@ -27,11 +27,6 @@ def reformat_date(d, doc_id):
       if text.find(new_d) >= 0:
         print('add 日:', doc_id, d, new_d)
         return new_d
-      else:
-        return ''
-    elif year_flag and month_flag:
-      print('我也不知道这种情况怎么改', d)
-      return ''
     elif month_flag and day_flag:
       if d.startswith('-'):
         d = d[1:]
@@ -43,26 +38,7 @@ def reformat_date(d, doc_id):
         new_d = '2020年' + d
         print('add 2020年:', doc_id, d, new_d)
         return new_d
-      else:
-        return ''
-    else:
-      return ''
   return d
-
-
-def reformat_name(n, doc_id):
-  text = doc_id_text_dict[doc_id]
-  if len(n) > 2:
-    return n
-  elif len(n) == 2:
-    if text.find(n) >= 0:
-      return n
-    else:
-      print(doc_id, n)
-      return ''
-  else:
-    print(n)
-    return ''
 
 
 role_entity_type_dict = {
@@ -72,8 +48,9 @@ role_entity_type_dict = {
   '质押结束日期': '时间', '增持金额': '数字&单位', '增持的股东': '公司/人名', '增持开始日期': '时间', '减持金额': '数字&单位', '减持的股东': '公司/人名', '减持开始日期': '时间',
 }
 single_event_types = ['高层死亡', '重大安全事故', '重大资产损失', '破产清算', '重大对外赔付']
-with open(abbr_file, 'r', encoding='utf8') as abbr_fh:
-  abbr_maps = json.load(abbr_fh)
+
+# with open(abbr_file, 'r', encoding='utf8') as abbr_fh:
+#   abbr_maps = json.load(abbr_fh)
 
 event_num_dict = {}
 unique_event_num_dict = {}
@@ -83,7 +60,7 @@ with open(os.path.join(data_dir, result_file), 'r', encoding='utf8') as input_fh
   for _i, line in enumerate(input_fh):
     data = json.loads(line)
     doc_id = data['doc_id']
-    abbr_map = abbr_maps[doc_id]
+    # abbr_map = abbr_maps[doc_id]
     event_num = len(data['events'])
     if event_num == 0:
       print('event_num zero error:', _i, data['doc_id'])
@@ -99,19 +76,13 @@ with open(os.path.join(data_dir, result_file), 'r', encoding='utf8') as input_fh
       event_str = ''
       for k, v in event.items():
         v = v.strip()
-        v = re.sub(r'[<br>|&nbsp;|\s]+', '', v)
-        if v in abbr_map.keys():
-          v = abbr_map[v]
-        # if v != event[k]:
-        #   print(v, event[k])
+        v = re.sub(r'(?<![a-zA-Z])(<br>|&nbsp;|\s)+', '', v)
+        v = re.sub(r'(<br>|&nbsp;|\s)+(?![a-zA-Z])', '', v)
+        v = re.sub(r'(?<=[a-zA-Z])(<br>|\s)+(?=[a-zA-Z])', ' ', v)
+        # if v in abbr_map.keys():
+        #   v = abbr_map[v]
         if k != 'event_type' and role_entity_type_dict[k] == '时间':
           v = reformat_date(v, doc_id)
-        if k != 'event_type' and '人名' in role_entity_type_dict[k]:
-          v = reformat_name(v, doc_id)
-        if k != 'event_type' and '公司' in role_entity_type_dict[k]:
-          v = reformat_name(v, doc_id)
-        if v == '':
-          continue
         event[k] = v
         event_str += '{}_{}/'.format(k, v)
       if event_str not in events_set:
