@@ -3,7 +3,7 @@ import os
 import re
 
 data_dir = 'data\\output\\electra_large'
-result_file = 'electra_annot_finetuning_data_output_electra_large_result_20200915_153251.txt'
+result_file = 'electra_best_finetuning_data_output_electra_large_result_full_20200927_060953.txt'
 output_file = '{}_single.txt'.format(result_file.split('.')[0])
 output_file2 = '{}_full.txt'.format(result_file.split('.')[0])
 # abbr_file = 'data\\abbr_map.json'
