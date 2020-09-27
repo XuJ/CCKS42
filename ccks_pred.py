@@ -15,7 +15,7 @@ def run_prediction(data_dir, part, result_dir, model_name):
       'ccks42ec_eval_preds.json')
     num_pred_file = os.path.join(result_dir, 'models', model_name, 'results', 'ccks42ec,ccks42reg_cl',
       'ccks42reg_eval_preds.json')
-    ee_pred_file = os.path.join(data_dir, 'models', model_name, 'results', 'ccks42bagging', 'vote1',
+    ee_pred_file = os.path.join(data_dir, 'models', model_name, 'results', 'ccks42bagging', 'final_result', 'vote1',
       'ccks42bagging_eval_1_preds.json')
     ee_input_file = os.path.join(result_dir, 'finetuning_data', 'ccks42ee', 'eval.json')
   else:
