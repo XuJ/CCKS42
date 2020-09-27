@@ -9,8 +9,8 @@ import tensorflow.compat.v1 as tf
 def run_data_prepare(data_dir, part):
   input_dir = os.path.join(data_dir, 'electra_ensemble_{}'.format(part), 'finetuning_data', part)
 
-  tf.io.gfile.copy(os.path.join(input_dir, 'train.json'), os.path.join(input_dir, 'train_backup.json'), True)
-  tf.io.gfile.copy(os.path.join(input_dir, 'dev.json'), os.path.join(input_dir, 'dev_backup.json'), True)
+  tf.io.gfile.rename(os.path.join(input_dir, 'train.json'), os.path.join(input_dir, 'train_backup.json'), True)
+  tf.io.gfile.rename(os.path.join(input_dir, 'dev.json'), os.path.join(input_dir, 'dev_backup.json'), True)
   with tf.io.gfile.GFile(os.path.join(input_dir, 'train_backup.json'), 'r') as input_fh1, tf.io.gfile.GFile(
       os.path.join(input_dir, 'dev_backup.json'), 'r') as input_fh2, tf.io.gfile.GFile(
       os.path.join(input_dir, 'train.json'), 'w') as output_fh:
