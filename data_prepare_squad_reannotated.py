@@ -149,7 +149,7 @@ def run_data_prepare(data_dir, split, part, result_dir, model_name):
         text_label_dict[text] = label
         label_prop_dict[label] = label_prop_dict.get(label, 0) + 1
         if label in single_event_types:
-          print(text)
+          print(label, text)
     print('label_prop_dict:', label_prop_dict)
     text_num_dict = {}
     with tf.io.gfile.GFile(num_pred_result_file, 'r') as num_pred_fh:
