@@ -142,13 +142,19 @@ def run_data_prepare(data_dir, split, part, result_dir, model_name):
     }
     task = 'eval'
     text_label_dict = {}
+    label_prop_dict = {}
+    num_prop_dict = {}
     with tf.io.gfile.GFile(cl_pred_result_file, 'r') as cl_pred_fh:
       for text, label in json.load(cl_pred_fh).items():
         text_label_dict[text] = label
+        label_prop_dict[label] = label_prop_dict.get(label, 0) + 1
+    print('label_prop_dict:', label_prop_dict)
     text_num_dict = {}
     with tf.io.gfile.GFile(num_pred_result_file, 'r') as num_pred_fh:
       for text, num in json.load(num_pred_fh).items():
         text_num_dict[text] = num
+        num_prop_dict[num] = num_prop_dict.get(num, 0) + 1
+    print('num_prop_dict:', num_prop_dict)
 
     with tf.io.gfile.GFile(os.path.join(input_dir, test_input_file), 'r') as input_fh, tf.io.gfile.GFile(
         os.path.join(output_dir, test_file), 'w') as test_fh:
