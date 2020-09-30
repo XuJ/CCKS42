@@ -56,9 +56,8 @@ def run_post_processing(data_dir, result_file, test_dir):
   event_num_dict = {}
   unique_event_num_dict = {}
   with tf.io.gfile.GFile(os.path.join(data_dir, result_file), 'r') as input_fh, tf.io.gfile.GFile(
-      os.path.join(data_dir, output_file), 'w') as output_fh, tf.io.gfile.GFile(
-    os.path.join(data_dir, output_file2),
-    'w', encoding='utf8') as output_fh2:
+      os.path.join(data_dir, output_file), 'w') as output_fh, tf.io.gfile.GFile(os.path.join(data_dir, output_file2),
+                                                                                'w') as output_fh2:
     for _i, line in enumerate(input_fh):
       data = json.loads(line)
       doc_id = data['doc_id']
