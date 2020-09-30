@@ -12,8 +12,10 @@ def run_post_processing(data_dir, result_file, test_dir):
 
   doc_id_text_dict = {}
   with tf.io.gfile.GFile(test_file, 'r') as pred_fh:
-    for org_line in pred_fh:
+    for i, org_line in enumerate(pred_fh):
       data = json.loads(org_line)
+      if i <= 10:
+        print(data['doc_id'])
       doc_id_text_dict[data['doc_id']] = data['content']
 
   def reformat_date(d, doc_id):
