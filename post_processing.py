@@ -89,6 +89,7 @@ def run_post_processing(data_dir, result_file, test_dir):
           if k != 'event_type' and len(v) > 32:
             v = ''
           event[k] = v
+          print(event)
           event_str += '{}_{}/'.format(k, v)
         if event_str not in events_set:
           events_set.add(event_str)
